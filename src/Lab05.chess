@@ -12,9 +12,17 @@
     Kde8
 	Qdd8
 //	Bdf8
-//	Ndg8
+	Ndg8
     Rdh8
+	
+	Rla6
 
-	Qd1-e2+	Rh8-h5
+	Qd1-e2	Rh8-h5
+	Qd1-d3	Rh5-e5+
+	Qd3-d1	Ng8-f6
+	Qd1-a4+	Nf6-g4
+	Ra6-e6+	Ng4-h2
+	Qa4-c4		Qd8-d1+
+	
 
 	

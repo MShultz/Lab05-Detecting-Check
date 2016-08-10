@@ -281,7 +281,7 @@ public class Translator {
 			movement += (currentBoard[position.getRank()][position.getFile()] == null ? "-" : "x");
 			movement += Character.toLowerCase(ui.getFileLetter(position.getFile()));
 			movement += (position.getRank() + 1);
-			movement += (board.isCheck(getBoardWithMovement(piecePosition, position), !piece.isWhite(),
+			movement += (board.isCheck(getBoardWithMovement(piecePosition, position), piece, !piece.isWhite(),
 					(King)board.getOpposingTeamKing(!piece.isWhite(), currentBoard))? "+" : "");
 		}
 		return movement;

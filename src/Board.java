@@ -32,21 +32,20 @@ public class Board {
 				Piece p = getPiece(position1);
 				if (isValidPieceMovement(handler.isCapture(placement), p, position2)) {
 					Position originalPosition = p.getCurrentPosition();
-					Piece [][] checker = copyArray(board);
+					Piece[][] checker = copyArray(board);
 					checker[position1.getRank()][position1.getFile()] = null;
 					checker[position2.getRank()][position2.getFile()] = p;
 					p.setCurrentPosition(position2);
-						boolean opponentInCheck = isCheck(checker, isWhite,
-								(King) getOpposingTeamKing(!isWhite, checker));
-						if (!opponentInCheck
-								|| (opponentInCheck && (placement.contains("+")))) {
-							board[position1.getRank()][position1.getFile()] = null;
-							p.setHasMoved();
-							board[position2.getRank()][position2.getFile()] = p;
-							sucessfulMove = true;
-						}else{
-							p.setCurrentPosition(originalPosition);
-						}
+					boolean opponentInCheck = isCheck(checker, p, isWhite, (King) getOpposingTeamKing(!isWhite, checker));
+					if (!opponentInCheck && (!placement.contains("+"))
+							|| (opponentInCheck && (placement.contains("+")))) {
+						board[position1.getRank()][position1.getFile()] = null;
+						p.setHasMoved();
+						board[position2.getRank()][position2.getFile()] = p;
+						sucessfulMove = true;
+					} else {
+						p.setCurrentPosition(originalPosition);
+					}
 				}
 			}
 		}
@@ -265,36 +264,18 @@ public class Board {
 
 	// *****************************************************************************//
 
-	public boolean isCheck(Piece[][] board, boolean isWhite, King king) {
-		ArrayList<Piece> currentTeam = getOpposingTeam(isWhite, board);
-		ArrayList<Position> possibleMoves = getMoves(currentTeam, board);
+	public boolean isCheck(Piece[][] board, Piece pieceMoved, boolean isWhite, King king) {
+		ArrayList<Position> possibleMoves = pieceMoved.getMovement(board, true);
 		boolean isCheck = false;
-		for (Position pos : possibleMoves) {
-			if (pos.equals(king.getCurrentPosition()))
-				isCheck = true;
-		}
-		return isCheck;
-	}
-
-	private ArrayList<Piece> getOpposingTeam(boolean isWhite, Piece[][] board) {
-		ArrayList<Piece> opposingTeam = new ArrayList<Piece>();
-		for (Piece[] pieces : board) {
-			for (Piece p : pieces) {
-				if (p != null) {
-					if (p.isWhite() == isWhite)
-						opposingTeam.add(p);
-				}
+		
+			for (Position pos : possibleMoves) {
+				if (pos.equals(king.getCurrentPosition()))
+					isCheck = true;
+					king.setCheck(isCheck);
 			}
-		}
-		return opposingTeam;
-	}
-
-	private ArrayList<Position> getMoves(ArrayList<Piece> pieces, Piece[][] currentBoardToCheck) {
-		ArrayList<Position> possibleMoves = new ArrayList<Position>();
-		for (Piece p : pieces) {
-			possibleMoves.addAll(p.getMovement(currentBoardToCheck, true));
-		}
-		return possibleMoves;
+		
+			
+		return isCheck;
 	}
 
 	public Piece getOpposingTeamKing(boolean isWhite, Piece[][] currentBoard) {
@@ -310,11 +291,11 @@ public class Board {
 		}
 		return k;
 	}
-	
-	private Piece[][] copyArray(Piece[][] board){
+
+	private Piece[][] copyArray(Piece[][] board) {
 		Piece[][] newCopy = new Piece[8][8];
-		for(int i=0; i < board.length; ++i){
-			 System.arraycopy(board[i], 0, newCopy[i], 0, board[i].length);
+		for (int i = 0; i < board.length; ++i) {
+			System.arraycopy(board[i], 0, newCopy[i], 0, board[i].length);
 		}
 		return newCopy;
 	}
