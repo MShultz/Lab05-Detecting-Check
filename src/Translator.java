@@ -43,10 +43,10 @@ public class Translator {
 		if (!interactionMode) {
 			translateFile();
 		}
-//		writer.writeToFile("----------------------------------");
-//		writer.writeToFile("Process: Interactive Mode enabled.");
-//		writer.writeToFile("----------------------------------");
-//		interactionMode();
+		writer.writeToFile("----------------------------------");
+		writer.writeToFile("Process: Interactive Mode enabled.");
+		writer.writeToFile("----------------------------------");
+		interactionMode();
 		shutdown();
 	}
 
@@ -74,6 +74,8 @@ public class Translator {
 					Piece current = pieces.get(piece - 1);
 					ArrayList<Position> possibleMoves = current.getMovement(board.getBoard(),
 							(current.getType() == PieceType.PAWN ? false : true));
+					possibleMoves = board.getNonCheckMovements(possibleMoves, current,
+							(King) board.getTeamKing(current.isWhite(), board.getBoard()));
 					if (current.getType() == PieceType.KING || current.getType() == PieceType.ROOK) {
 						if (board.isValidCastle("O-O-O", isWhite))
 							possibleMoves.add(new Position(-1, -1)); // Queen
@@ -97,7 +99,7 @@ public class Translator {
 					}
 				}
 			} while (!pieceChosen);
-
+			board.setPostMoveChecks();
 			++count;
 			board.printBoardToConsole();
 		} while (!quit && board.isPlayable());
@@ -122,6 +124,7 @@ public class Translator {
 	private void translateFile() {
 		try {
 			while (file.ready()) {
+				boolean wasMove = false;
 				String currentLine = getCurrentLine().trim();
 				if (finder.containsComment(currentLine)) {
 					currentLine = finder.removeComment(currentLine).trim();
@@ -133,12 +136,17 @@ public class Translator {
 						ArrayList<String> movements = finder.getMovementDirectives(currentLine);
 						processMovement(movements.get(0), true);
 						processMovement(movements.get(1), false);
+						wasMove= true;
 					} else if (finder.containsCastle(currentLine)) {
 						processCastling(currentLine);
+						wasMove = true;
 
 					} else {
 						writer.writeToFile(format.getIncorrect(currentLine));
 					}
+				}
+				if(wasMove){
+					board.setPostMoveChecks();
 				}
 			}
 		} catch (Exception e) {
@@ -281,14 +289,16 @@ public class Translator {
 			movement += (currentBoard[position.getRank()][position.getFile()] == null ? "-" : "x");
 			movement += Character.toLowerCase(ui.getFileLetter(position.getFile()));
 			movement += (position.getRank() + 1);
+			piece.setCurrentPosition(position);
 			movement += (board.isCheck(getBoardWithMovement(piecePosition, position), piece, !piece.isWhite(),
-					(King)board.getOpposingTeamKing(!piece.isWhite(), currentBoard))? "+" : "");
+					(King) board.getTeamKing(!piece.isWhite(), currentBoard)) ? "+" : "");
+			piece.setCurrentPosition(piecePosition);
 		}
 		return movement;
 	}
 
 	private Piece[][] getBoardWithMovement(Position pos1, Position pos2) {
-		Piece[][] newBoard = board.getBoard();
+		Piece[][] newBoard = board.copyArray(board.getBoard());
 		Piece p = newBoard[pos1.getRank()][pos1.getFile()];
 		newBoard[pos1.getRank()][pos1.getFile()] = null;
 		newBoard[pos2.getRank()][pos2.getFile()] = p;

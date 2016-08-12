@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class King extends Piece {
 	private boolean isCheck;
+	private int numChecks;
 	private Position[] changeInPosition = { new Position(1, 0), new Position(-1, 0), new Position(0, 1),
 			new Position(0, -1), new Position(1, 1), new Position(1, -1), new Position(-1, 1), new Position(-1, -1) };
 
@@ -9,7 +10,12 @@ public class King extends Piece {
 		super(type, isWhite, p);
 		isCheck = false;
 	}
-
+	public void setNumChecks(int checks){
+		this.numChecks = checks;
+	}
+	public int getNumChecks(){
+		return numChecks;
+	}
 	public void setCheck(boolean isCheck) {
 		this.isCheck = isCheck;
 	}
