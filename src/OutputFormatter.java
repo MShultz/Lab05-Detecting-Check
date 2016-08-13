@@ -98,10 +98,13 @@ public class OutputFormatter {
 		if (board.getPiece(position1) == null) {
 			invalid += "There is no piece to move";
 		} else if (!board.isCorrectPiece(piece, position1, isWhiteTurn)) {
-			if((board.getPiece(position1).isWhite() && !isWhiteTurn) || (!board.getPiece(position1).isWhite() && isWhiteTurn)){
-				invalid += "This " + board.getPiece(position1).getType().toString().toLowerCase() + " is not your piece.";
-			}else
-			invalid += "This " + board.getPiece(position1).getType().toString().toLowerCase() + " is not the indicated piece.";
+			if ((board.getPiece(position1).isWhite() && !isWhiteTurn)
+					|| (!board.getPiece(position1).isWhite() && isWhiteTurn)) {
+				invalid += "This " + board.getPiece(position1).getType().toString().toLowerCase()
+						+ " is not your piece.";
+			} else
+				invalid += "This " + board.getPiece(position1).getType().toString().toLowerCase()
+						+ " is not the indicated piece.";
 		} else if (board.isOccupied(position2)
 				&& (!board.isCapture(placement) || board.isPlayerPiece(isWhiteTurn, position2))) {
 			if (!board.isCapture(placement)) {
@@ -111,9 +114,13 @@ public class OutputFormatter {
 			}
 		} else if (!board.isOccupied(position2) && board.isCapture(placement)) {
 			invalid += "You are attempting to capture a square that doesn't have a player on it.";
-		}else{
-			invalid += "The " + board.getPiece(position1).getType().toString().toLowerCase() + " cannot make that movement.";
+		} else if (placement.contains("+")) {
+			invalid += "This move did not contain check as the directive stated.";
+		} else {
+			invalid += "The " + board.getPiece(position1).getType().toString().toLowerCase()
+					+ " cannot make that movement.";
 		}
 		return invalid;
 	}
+
 }

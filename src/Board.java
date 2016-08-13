@@ -39,7 +39,7 @@ public class Board {
 					checker[position2.getRank()][position2.getFile()] = p;
 					p.setCurrentPosition(position2);
 					King opponentKing = (King) getTeamKing(!isWhite, checker);
-					boolean opponentInCheck = isCheck(checker, p, isWhite, opponentKing);
+					boolean opponentInCheck = isCheck(checker, p, opponentKing);
 					if (!opponentInCheck && (!placement.contains("+"))
 							|| (opponentInCheck && (placement.contains("+")))) {
 						board[position1.getRank()][position1.getFile()] = null;
@@ -273,7 +273,7 @@ public class Board {
 
 	// *****************************************************************************//
 
-	public boolean isCheck(Piece[][] board, Piece pieceMoved, boolean isWhite, King king) {
+	public boolean isCheck(Piece[][] board, Piece pieceMoved, King king) {
 		ArrayList<Position> possibleMoves = pieceMoved.getMovement(board, true);
 		boolean isCheck = false;
 
